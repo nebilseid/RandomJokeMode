@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Random Jokes</string>
+    <string name="categories">Categories: %s</string>
 </resources>

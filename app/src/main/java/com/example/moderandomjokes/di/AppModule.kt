@@ -1,7 +1,7 @@
-package com.example.moderandomjokes.model.di
+package com.example.moderandomjokes.di
 
-import com.example.moderandomjokes.model.repository.JokesRepository
-import com.example.moderandomjokes.model.repository.RepositoryImpl
+import com.example.moderandomjokes.data.repository.JokesRepository
+import com.example.moderandomjokes.data.repository.Repository
 import com.example.moderandomjokes.ui.JokesViewModel
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
@@ -13,7 +13,7 @@ val networkModule = module {
 }
 
 val repo: Module = module {
-    single<RepositoryImpl> { JokesRepository(get()) }
+    single<Repository> { JokesRepository(get()) }
 }
 
 

@@ -7,9 +7,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moderandomjokes.R
 import com.example.moderandomjokes.model.Value
+import com.example.moderandomjokes.util.inflate
 import kotlinx.android.synthetic.main.item_joke.view.*
 
-class JokesAdapter : RecyclerView.Adapter<JokesAdapter.ArtistViewHolder>() {
+class JokesAdapter : RecyclerView.Adapter<JokesAdapter.JokesViewHolder>() {
 
     private val data = arrayListOf<Value>()
 
@@ -22,23 +23,20 @@ class JokesAdapter : RecyclerView.Adapter<JokesAdapter.ArtistViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        ArtistViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_joke,
-                parent,
-                false
-            )
-        )
-
+        JokesViewHolder(parent.inflate(R.layout.item_joke))
+    
+    
     override fun getItemCount() = data.size
-    override fun onBindViewHolder(viewHolder: ArtistViewHolder, position: Int) {
+    override fun onBindViewHolder(viewHolder: JokesViewHolder, position: Int) {
         viewHolder.bind(data[position])
 
     }
 
-    inner class ArtistViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(response: Value) {
-            view.tv_joke.text =  Html.fromHtml(response.joke).toString()
+    inner class JokesViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+        fun bind(item: Value) {
+            view.tv_joke.text = Html.fromHtml(item.joke, Html.FROM_HTML_MODE_LEGACY).toString()
+            view.tv_joke_categories.text =
+                view.context.getString(R.string.categories, item.categoriesFlattened)
         }
     }
 }

@@ -1,43 +1,50 @@
 package com.example.moderandomjokes.ui
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.moderandomjokes.model.DataJokes
-import com.example.moderandomjokes.model.repository.RepositoryImpl
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.example.moderandomjokes.model.Value
+import com.example.moderandomjokes.data.repository.Repository
+import com.example.moderandomjokes.util.AppSchedulers
+import com.example.moderandomjokes.util.asLiveData
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 
-class JokesViewModel(private val repository: RepositoryImpl) : ViewModel() {
+class JokesViewModel(private val repository: Repository) : ViewModel() {
 
     private val disposable = CompositeDisposable()
-    private val loadingLiveData = MutableLiveData<Boolean>()
-    private val jokesContentLiveData = MutableLiveData<DataJokes>()
-    private val errorLiveData: MutableLiveData<String> = MutableLiveData()
 
+    private val _loadingLiveData = MutableLiveData<Boolean>()
+    private val _jokesContentLiveData = MutableLiveData<List<Value>>()
+    private val _errorLiveData: MutableLiveData<String> = MutableLiveData()
+
+    val loadingLiveData = _loadingLiveData.asLiveData()
+    val jokesContentLiveData = _jokesContentLiveData.asLiveData()
+    val errorLiveData = _errorLiveData.asLiveData()
 
     fun fetchJokes() {
         disposable.add(
             repository.fetchJokes()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { loadingLiveData.value = true }
-                .doOnEvent { _, _ -> loadingLiveData.value = false }
-                .subscribe({
-                    jokesContentLiveData.value = it
-                }, {
-                    it.printStackTrace()
-                    errorLiveData.value = "ERROR"
-                })
+                .subscribeOn(AppSchedulers.io)
+                .observeOn(AppSchedulers.ui)
+                .doOnSubscribe { _loadingLiveData.value = true }
+                .doOnEvent { _, _ -> _loadingLiveData.value = false }
+                .subscribe(
+                    { _jokesContentLiveData.value = filterJokes(it, "explicit") },
+                    { handleError(it) }
+                )
         )
     }
+
     override fun onCleared() {
         disposable.clear()
         super.onCleared()
     }
 
-    fun getLoadingObservable(): LiveData<Boolean> = loadingLiveData
-    fun getJokesContentObservable(): MutableLiveData<DataJokes> = jokesContentLiveData
-    fun getErrorObservable(): LiveData<String> = errorLiveData
+    private fun filterJokes(jokes: DataJokes, filter: String = "") =
+        jokes.value.filter { joke -> joke.categories.any { it != filter } }
+
+    private fun handleError(error: Throwable) {
+        error.printStackTrace()
+        _errorLiveData.value = error.message
+    }
 }

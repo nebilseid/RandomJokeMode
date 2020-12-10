@@ -1,9 +1,9 @@
 package com.example.moderandomjokes
 
 import android.app.Application
-import com.example.moderandomjokes.model.di.networkModule
-import com.example.moderandomjokes.model.di.repo
-import com.example.moderandomjokes.model.di.viewModels
+import com.example.moderandomjokes.di.networkModule
+import com.example.moderandomjokes.di.repo
+import com.example.moderandomjokes.di.viewModels
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 

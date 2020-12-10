@@ -1,6 +1,6 @@
-package com.example.moderandomjokes.model.di
+package com.example.moderandomjokes.di
 
-import com.example.moderandomjokes.model.api.JokesApi
+import com.example.moderandomjokes.data.api.JokesApi
 import com.example.moderandomjokes.util.API_TIMEOUT
 import com.example.moderandomjokes.util.BASE_URL
 import okhttp3.OkHttpClient
